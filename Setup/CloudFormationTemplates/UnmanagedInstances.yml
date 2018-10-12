@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: Deploys 3 Linux instances with the same configuration, that are unmanaged from the specified AMI.
+Outputs:
+  InstanceIds:
+    Description: InstanceIds of the instances created
+    Value: !Join [",", [!Ref Instance1, !Ref Instance2, !Ref Instance3]]
+Parameters:
+  KeyPairName:
+    Description: Keypair for the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription : Must be the name of an existing EC2 Keypair
+  InstanceType:
+    Description: Amazon EC2 Instance Type
+    Type: String
+    Default: t2.medium
+    AllowedValues: [
+      t2.micro,
+      t2.medium, 
+      t2.large
+    ]
+  AmiId:
+    Description: Ami Id for Linux
+    Type: String
+  VpcId:
+    Description: VPC id for the security group
+    Type: String
+Resources:
+  SSHAccessGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupDescription: Enable SSH access via port 22
+      GroupName: SSHAccess2
+      SecurityGroupIngress:
+        CidrIp: 0.0.0.0/0
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+  Instance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AmiId
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds: [!GetAtt SSHAccessGroup.GroupId]
+      Tags:
+      - Key: Environment
+        Value: Unmanaged
+      - Key: Training
+        Value: Webinar
+    DependsOn: SSHAccessGroup
+  Instance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AmiId
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds: [!GetAtt SSHAccessGroup.GroupId]
+      Tags:
+      - Key: Environment
+        Value: Unmanaged
+      - Key: Training
+        Value: Webinar
+    DependsOn: SSHAccessGroup
+  Instance3:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref AmiId
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds: [!GetAtt SSHAccessGroup.GroupId]
+      Tags:
+      - Key: Environment
+        Value: Unmanaged
+      - Key: Training
+        Value: Webinar
+    DependsOn: SSHAccessGroup
+  

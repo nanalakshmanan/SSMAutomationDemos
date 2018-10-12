@@ -14,11 +14,11 @@ Describe "Environment" {
         }
     }
 
-    It "There are 10 running EC2 instances" {
-        (Get-EC2Instance | foreach Instances | foreach State | where code -eq 16).Count | Should Be 10
+    It "There are 13 running EC2 instances" {
+        (Get-EC2Instance | foreach Instances | foreach State | where code -eq 16).Count | Should Be 13
     }
 
-    $AllDocs = @($BounceHostName, $RestartNodeWithApprovalDoc)
+    $AllDocs = @($BounceHostName, $RestartNodeWithApprovalDoc, $StartEC2InstanceDoc, $StartEC2WaitForRunningDoc, $CheckCTLoggingStatusDoc, $AuditCTLoggingDoc)
 
     $AllDocs | % {
         $DocName = $_

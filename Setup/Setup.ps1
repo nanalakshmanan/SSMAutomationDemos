@@ -4,7 +4,7 @@ param(
 
 . "./Settings.ps1"
 
-$AllStacks = @($EmailLambdaStack, $LinuxInstanceStack, $WindowsInstanceStack, $SNSStack)
+$AllStacks = @($EmailLambdaStack, $LinuxInstanceStack, $WindowsInstanceStack, $SNSStack, $UnmanagedInstanceStack)
 function Get-Parameter
 {
 	param(
@@ -52,6 +52,13 @@ $Vpc = Get-Parameter 'VpcId' $VpcId
 
 $contents = Get-Content ./CloudFormationTemplates/LinuxInstances.yml -Raw 
 New-CFNStack -StackName $LinuxInstanceStack -TemplateBody $contents -Parameter @($InstanceProfile, $KeyPair, $AmiId, $Vpc)
+
+$KeyPair = Get-Parameter 'KeyPairName' $KeyPairName
+$AmiId = Get-Parameter 'AmiId' $LinuxAmiId
+$Vpc = Get-Parameter 'VpcId' $VpcId
+
+$contents = Get-Content ./CloudFormationTemplates/UnmanagedInstances.yml -Raw 
+New-CFNStack -StackName $UnmanagedInstanceStack -TemplateBody $contents -Parameter @($KeyPair, $AmiId, $Vpc)
 
 $InstanceProfile = Get-Parameter 'InstanceProfileName' $InstanceProfileName
 $KeyPair = Get-Parameter 'KeyPairName' $KeyPairName
@@ -101,4 +108,12 @@ $target.Key = 'tag:HRAppEnvironment'
 $target.Values = 'Production'
 
 New-SSMAssociation -AssociationName HRAppInventoryAssociation -Name AWS-GatherSoftwareInventory -Target $target -ScheduleExpression 'cron(0 */30 * ? * *)'
+
+$AllDocs = @($BounceHostName, $RestartNodeWithApprovalDoc, $StartEC2InstanceDoc, $StartEC2WaitForRunningDoc, $CheckCTLoggingStatusDoc, $AuditCTLoggingDoc)
+$YamlDocs = @($StartEC2InstanceDoc, $StartEC2WaitForRunningDoc, $CheckCTLoggingStatusDoc, $AuditCTLoggingDoc)
+
+$YamlDocs | % {
+	$contents = Get-Content "../Documents/$($_).yml" -Raw
+	New-SSMDocument -Content $contents -DocumentFormat YAML -DocumentType Automation -Name $_ 
+}
 

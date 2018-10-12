@@ -3,8 +3,8 @@ param(
 )
 . "./Settings.ps1"
 
-$AllStacks = @($EmailLambdaStack, $LinuxInstanceStack, $WindowsInstanceStack, $SNSStack)
-$AllDocs = @($BounceHostName, $RestartNodeWithApprovalDoc)
+$AllStacks = @($EmailLambdaStack, $LinuxInstanceStack, $WindowsInstanceStack, $SNSStack, $UnmanagedInstanceStack)
+$AllDocs = @($BounceHostName, $RestartNodeWithApprovalDoc, $StartEC2InstanceDoc, $StartEC2WaitForRunningDoc, $CheckCTLoggingStatusDoc, $AuditCTLoggingDoc)
 function Wait-Stack
 {
 	param(
