@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: Creates SNS Topic for HR Application alerts.
+Resources:
+  MySNSTopic: 
+    Type: "AWS::SNS::Topic"
+    Properties:
+      TopicName: "HRApplicationAlerts"
+      DisplayName: "HR Application Alerts" 
+      Subscription: 
+      - Endpoint: 'nanalakshmanan.test@gmail.com'
+        Protocol: email
